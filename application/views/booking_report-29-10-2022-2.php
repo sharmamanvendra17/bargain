@@ -1,0 +1,955 @@
+<?php include 'header.php'; ?>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.2.3/flatpickr.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.2.3/themes/dark.css">
+<style type="text/css">
+    .panel-body .table th {
+    text-align: center;
+    vertical-align: top;
+}
+.table_report { border: none; }
+.table_report td { font-weight: normal; }
+</style>
+<link href="<?php echo base_url(); ?>assets/css/bootstrap-datetimepicker.min.css" rel="stylesheet" media="screen">
+<section id="middle">
+    <header id="page-header">
+        <h1><?php echo $title; ?></h1> 
+    </header>
+    <div id="content" class="padding-20">
+        <div id="panel-1" class="panel panel-default">
+            <form action="" class="" method="post" id="addbooking">
+            <div class="panel-heading">
+                <div class="row">
+
+                        <div class="col-md-8">   
+                            <span class="title elipsis">
+                                <strong><?php echo $title; ?></strong> <!-- panel title -->
+                            </span> 
+                        </div>
+                        <div class="col-md-4">
+                            <span class="title elipsis header_add">
+                                <div class="form-group cal" style="margin-bottom:0px!important"> 
+                                    <div class="controls input-append date form_date" data-date="" data-date-format="yyyy-mm-dd" data-link-field="dtp_input1" data-link-format="yyyy-mm-dd">
+                                        <input size="16" type="text" value="" class="form-control calc_b" readonly>
+                                        <span class="add-on"><i class="icon-remove"></i></span>
+                                        <span class="add-on"><i class="icon-th"></i></span>
+                                    </div>
+                                    <input type="hidden" name="booking_date" id="dtp_input1" value="" /><br/>
+                                </div> &nbsp;&nbsp;
+                                <a href="javascript:void(0)" class="reset btn">Reset</a>
+                            </span>               
+
+                        </div>
+
+                </div>
+             
+                
+            </div>
+            <div class="panel-body">
+                <?php if($this->session->flashdata('err_msg')) { ?>
+                    <div class="alert alert-danger noborder text-center weight-400 nomargin noradius">
+                        <?php echo $this->session->flashdata('err_msg'); ?>
+                    </div>
+                <?php } ?>
+                <?php if($this->session->flashdata('suc_msg')) { ?>
+                    <div class="alert alert-success noborder text-center weight-400 nomargin noradius">
+                        <?php echo $this->session->flashdata('suc_msg'); ?>
+                    </div>
+                <?php } //echo "<pre>"; print_r($_POST); ?> 
+                <div class="row">
+                    <div class="col-md-12">                         
+                            <div class="row">  
+                                <input type="hidden" name="booking_number" id="booking_number" value="0">                              
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">               
+                                        <label for="name">Party Name</label> 
+                                        <select class="form-control" id="party" name="party" >
+                                            <option value="">Select Party</option>
+                                            <?php if($users) { 
+                                                foreach ($users as $key => $value) { ?>
+                                            <option value="<?php echo $value['id']; ?>" <?php if(isset($_POST['party'])) { if($_POST['party']==$value['id']) { echo "selected"; } }; ?>><?php echo $value['name'].' - '.$value['city_name']; ?></option>
+                                            <?php } } ?>
+                                        </select>
+                                        <span class="txt-danger"><?php echo form_error('party'); ?></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="name">Brand </label> 
+                                        <select class="form-control" id="brand" name="brand" >
+                                            <option value="">Select Brand</option>
+                                            <?php if($brands) { 
+                                                foreach ($brands as $key => $value) { ?>
+                                            <option value="<?php echo $value['id']; ?>" <?php if(isset($_POST['brand'])) { if($_POST['brand']==$value['id']) { echo "selected"; } }; ?>><?php echo $value['name']; ?></option>
+                                            <?php } } ?>
+                                        </select>
+                                        <span class="txt-danger"><?php echo form_error('brand'); ?></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="name">Product</label> 
+                                        <select class="form-control" id="category" name="category" >
+                                            <option value="">Select Product</option>
+                                        </select>
+                                        <span class="txt-danger"><?php echo form_error('category'); ?></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row" >
+                                <div class="col-md-4">
+                                    <div class="form-group"> 
+                                        <label for="rate">Booking Date (From) <?php echo date('Y-m-d');  ?></label>
+                                        <input class="form-control" type="text" id="booking_date_from" name="booking_date_from"  value="<?php if(isset($_POST['booking_date_from'])) { echo $_POST['booking_date_from']; } else { echo date('d-m-Y'); } ?>" />
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group"> 
+                                        <label for="rate">Booking Date (To)</label>
+                                        <input class="form-control" type="hidden" id="booking_date_to" name="booking_date_to" value="<?php if(isset($_POST['booking_date_to'])) { echo $_POST['booking_date_to']; } else { echo date('d-m-Y'); } ?>"/>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group"> 
+                                        <?php if($logged_role==4) { ?>
+                                        <label for="rate">Employee (Makers)</label>
+                                        <select class="form-control" id="employee" name="employee" >
+                                            <option value="">Select Employee</option>
+                                            <?php if($employees) { 
+                                                foreach ($employees as $key => $employee) { ?>
+                                            <option value="<?php echo $employee['id']; ?>" <?php if(isset($_POST['employee'])) { if($_POST['employee']==$employee['id']) { echo "selected"; } }; ?>><?php echo $employee['name']; ?></option>
+                                            <?php } } ?>
+                                        </select>
+                                        <?php } else { ?>
+                                            <select class="form-control" id="employee" name="employee" style="display:none;">
+                                                <option value="">Select Employee</option>
+                                            </select>
+                                        <?php }  ?>
+                                    </div>
+                                </div> 
+                            </div>  
+                            <div class="row" >
+                                <div class="col-md-4">
+                                    <div class="form-group"> 
+                                        <label for="rate">Status</label>
+                                        <input class="" type="radio" id="" name="status"  value=""   <?php echo (!isset($_POST['status']) || $_POST['status']=='') ? 'checked' : ''; ?> />All
+                                        <input class="" type="radio" id="" name="status"  value="2" <?php echo (isset($_POST['status']) && $_POST['status']=='2') ? 'checked' : ''; ?> />Approved
+                                        <input class="" type="radio" id="" name="status"  value="0" <?php echo (isset($_POST['status']) && $_POST['status']=='0') ? 'checked' : ''; ?> />Pending
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">                               
+                                <div class="col-md-4">
+                                    <div class="form-group"> 
+                                        <label class="btn-block"></label>
+                                        <button type="submit" class="btn btn-default booking_submit" value="Search">Search Bargain</button> 
+                                        <input type="submit" class="btn btn-default" name="summary_submit" value="Search Summary"> 
+                                    </div>                                  
+                                </div>                                
+                            </div>
+                        
+                    </div>
+                </div> 
+
+                <div class="table-responsive">
+                    <?php $total_weight = 0; ?>
+                    <?php if($search_summary == 0) { ?>
+                    <table class="table table-striped table-bordered table-hover" id="">
+                        <thead>
+                            <tr>
+                                <th>S.No</th>
+                                <th>Bargain No</th>
+                                <th>Party Name</th>
+                                <th>Place</th>  
+                                <th>Brand</th>   
+                                <th>Product</th>
+                                 
+                                <th>Quantity</th>  
+                                <th>Rate (15Ltr Tin)</th>  
+                                <th>Date</th>  
+                                <?php //if($logged_role != 1) { ?>
+                                <th>Status</th> 
+                                <?php //} ?>  
+                                <th>Action</th> 
+                            </tr>
+                        </thead>
+                        <tbody class="booking_records">
+                            <?php $total_weight = 0; if($bookings) { 
+                                $i=1;
+                                $count = 1;
+                                $cur_page =1;
+                                if(isset($limit))
+                                    $con_li = $limit;
+                                if($this->uri->segment(3)!='')
+                                    $cur_page = $this->uri->segment(3);
+                                $count = ($cur_page-1)*$con_li+1;
+                                foreach ($bookings as $key => $value) { ?>
+                                    <tr class="odd gradeX">
+                                        <td><?php echo $count; ?></td>
+                                        <td><span title="<?php echo $value['admin_name']; ?>">DATA/<?php echo $value['booking_id']; ?></span></td>
+                                        <td>
+                                            <?php if($value['status']==0) { ?>
+                                                <a title="Edit Brgain" href="<?php echo base_url('booking/edit').'/'.base64_encode($value['id']);?>" class="">
+                                            <?php  } ?>
+                                            <?php echo $value['party_name']; ?>
+                                            <?php if($value['status']==0) { ?>
+                                                </a>
+                                            <?php }  ?>
+                                        </td>
+                                        <td><?php echo $value['city_name']; ?></td> 
+                                        <td><?php echo $value['brand_name']; ?></td> 
+                                        <td><?php echo $value['category_name']; ?></td> 
+                                        <td><?php echo $value['quantity']; ?></td>  
+                                        <td><?php echo $value['rate']; ?></td> 
+                                         
+                                        <td><?php echo date("d-m-Y", strtotime($value['created_at'])); ?></td>
+                                        
+                                        <?php //if($logged_role != 1) { ?>
+                                        <td><?php 
+                                        $app_status = 0;
+                                        if($value['status']==2)
+                                        {
+                                         echo '<span class="btn btn-default" rel="" style="cursor:none;">Approved</span>';
+                                         $app_status = 1;
+                                        }
+                                        else 
+                                        {
+                                            if($value['is_lock'])
+                                            { ?> 
+                                                <span class="approve_btn btn btn-default" rel="<?php echo $value['id']; ?>">Locked</span>
+                                            <?php } else  
+                                            {
+                                                echo '<span class="btn btn-danger" style="cursor:none">Approval Pending</span>';
+                                            }
+                                        }
+                                        /*
+                                        if($value['is_lock']) {
+                                            if($value['status']==0 && $logged_role == 1)
+                                                echo '<span class="btn btn-danger"  rel="'.base64_encode($value['id']).'" style="cursor:none">Check Pending</span>'; 
+                                            elseif($value['status']==0 && $logged_role == 2 )
+                                                echo '<span class="btn btn-danger update_status" rel="'.base64_encode($value['id']).'" data-status="1" ><a href="javascript:void(0)" >Check Pending</a></span>'; 
+                                            elseif($value['status']==1  && $logged_role == 2)
+                                                echo '<span class="btn btn-warning"  rel="'.base64_encode($value['id']).'" style="cursor:none" >Checked</span>';
+                                            elseif($value['status']==1  && $logged_role == 3)
+                                                echo '<div class="approval_status_section '.$value['id'].'"><span  rel="'.base64_encode($value['id']).'" class="btn btn-success update_status_reject" rel="'.base64_encode($value['id']).'" data-status="2"><a href="javascript:void(0)" >Approve</a></span> <span class="btn btn-danger update_status_reject" rel="'.base64_encode($value['id']).'" data-status="3"><a href="javascript:void(0)" >Reject</a></span></div>';
+                                            elseif($value['status']==1  && $logged_role == 1)//maker and checked
+                                                echo '<span class="btn btn-warning" style="cursor:auto"  rel="'.base64_encode($value['id']).'" >Checked</span>';
+                                            elseif($value['status']==2)
+                                                echo '<span class="btn btn-success show_details1"  rel="'.base64_encode($value['id']).'" >Approved</span>'; 
+                                            elseif($value['status']==3)
+                                                echo '<span class="btn btn-danger show_details1"   rel="'.base64_encode($value['id']).'" >Rejected</span>'; 
+                                        } else  { echo  "SKU Pending"; } */
+                                            ?>
+                                        </td>
+                                        <?php //} ?>  
+                                        <td> 
+                                            <?php 
+                                            
+                                             if($value['is_lock']) { ?>
+                                                <!--<a href="<?php echo base_url('booking/downloadreport').'/'.base64_encode($value['booking_id']); ?>" rel="<?php echo $value['booking_id']; ?>" class="btn btn-default btn_report detail">Report</a>-->
+                                                <a href="javascript:void(0)" data-lock="<?php echo $value['is_lock']; ?>" rel="<?php echo $value['booking_id']; ?>" class="btn btn-default detail btn_report1" data-production_unit="<?php echo $value['production_unit']; ?>" data-status="<?php echo $app_status; ?>">Report</a>
+                                            <?php } else { if($logged_role==1) { ?>
+                                            <a href="<?php echo base_url('booking/sku').'/'.base64_encode($value['booking_id']); ?>" rel="<?php echo $value['booking_id']; ?>"  class="btn btn-default">Add SKU</a>
+                                            <?php } else { ?> 
+                                                <a href="javascript:void(0)" data-lock="<?php echo $value['is_lock']; ?>" rel="<?php echo $value['booking_id']; ?>" class="btn btn-default detail btn_report1" data-production_unit="<?php echo $value['production_unit']; ?>" data-status="<?php echo $app_status; ?>">Report</a>
+                                            <?php } } ?>
+                                        </td> 
+                                    </tr>
+                            <?php $count++; } } ?> 
+                        </tbody>
+                    </table>
+                    <table>
+                        <tr>
+                            <td>
+                                <?php echo $links; ?>
+                            </td>
+                        </tr>
+                    </table>
+                    <?php } else { 
+                        $params = "?party=$_POST[party]&brand=$_POST[brand]&product=$_POST[category]&from=$_POST[booking_date_from]&to=$_POST[booking_date_to]&type=brand&status=$_POST[status]&employee=$_POST[employee]";
+                        $params_place = "?party=$_POST[party]&brand=$_POST[brand]&product=$_POST[category]&from=$_POST[booking_date_from]&to=$_POST[booking_date_to]&type=place&status=$_POST[status]&employee=$_POST[employee]";
+                        ?>
+                    <div class="row summary_report">
+                                <div class="col-md-3 summary_report_col">
+                                </div>
+                                <div class="col-md-3 summary_report_col">
+                                    <strong>Number Of Bargains</strong>
+                                </div>
+                                <div class="col-md-3 summary_report_col">
+                                    <strong>Weight (MT)</strong>
+                                </div>
+                    </div>
+                    <?php
+                    if($tot_sum_report)
+                    {  foreach ($tot_sum_report as $key => $tot_sum_report_value) { 
+                        ?>
+                        <div class="row summary_report">
+                            <div class="col-md-3 summary_report_col">
+                                <strong>Total</strong>
+                            </div>
+                            <div class="col-md-3 summary_report_col">
+                                <?php echo $tot_sum_report_value['bargain_count']; ?>
+                            </div>
+                            <div class="col-md-3 summary_report_col">
+                                <?php echo ($tot_sum_report_value['weight']) ? $tot_sum_report_value['weight'] : 0;; ?>
+                            </div>
+                        </div>
+                    <?php } }
+                    if($locked)
+                    {  foreach ($locked as $key => $locked_value) { 
+                        ?>
+                        <div class="row summary_report">
+                            <div class="col-md-3 summary_report_col">
+                                <strong>Locked</strong>
+                            </div>
+                            <div class="col-md-3 summary_report_col">
+                                <?php echo $locked_value['bargain_count']; ?>
+                            </div>
+                            <div class="col-md-3 summary_report_col">
+                                <?php echo ($locked_value['weight']) ? $locked_value['weight'] : 0; ?>
+                            </div>
+                        </div>
+                    <?php } }
+
+                    if($sum_report)
+                    {
+                        foreach ($sum_report as $key => $sum_report_value) { ?>
+
+                            <div class="row summary_report">
+                                <div class="col-md-3 summary_report_col">
+                                    <strong><?php echo ($sum_report_value['status']==0) ? "Pending" : "Approved" ; ?></strong>
+                                </div>
+                                <div class="col-md-3 summary_report_col">
+                                    <?php echo $sum_report_value['bargain_count']; ?>
+                                </div>
+                                <div class="col-md-3 summary_report_col">
+                                    <?php echo $sum_report_value['weight']; ?>
+                                </div>
+                            </div> 
+                        <?php }
+                    } ?>
+
+                    <h4>Summary Based on Brand and Product 
+                        <?php if($bookings_brand_product) { ?>
+                            <a style="display: inline-block;float: right;" target="_blank" href="<?php echo base_url('booking/summary_print').$params; ?>">Print</a>
+                        <?php } ?>
+                    </h4> 
+                    <table class="table table-striped table-bordered table-hover" id="">
+                        <thead>
+                            <tr>
+                                <th style="text-align:left;">S.No</th>    
+                                <th style="text-align:left;">Brand</th>   
+                                <th style="text-align:left;">Product</th>
+                                <th style="text-align:left;">Quantity(Tins/Cartons)</th>
+                                <th style="text-align:left;">Weight (MT)</th>
+                                <th style="text-align:left;">Average Rate</th>
+                            </tr>
+                        </thead>
+                        <tbody class="">
+                            <?php $weight_total_summary = 0; $sn = 1; if($bookings_brand_product) {
+                                foreach ($bookings_brand_product as $key => $bookings_brand_product1) { 
+                                    $weight_total_summary = $weight_total_summary+$bookings_brand_product1['weight'];
+                                    ?>
+                                <tr>
+                                    <td><?php echo $sn; ?></td>  
+                                    <td><?php echo $bookings_brand_product1['brand_name']; ?></td> 
+                                    <td><?php echo $bookings_brand_product1['category_name']; ?></td> 
+                                    <td><?php echo $bookings_brand_product1['quantity']; ?></td> 
+                                    <td><?php echo $bookings_brand_product1['weight']; ?></td>
+                                    <td><?php echo round($bookings_brand_product1['avg_rate'],2); ?></td> 
+                                </tr>
+                            <?php $sn++; }?>
+                            <tr style="color:red;"><td colspan="3"></td><td>Total</td><td ><?php echo $weight_total_summary; ?></td></tr>
+                            <?php  } else { ?>
+                            <tr><td colspan="5">No Record Found</td></tr>
+                            <?php } ?>
+                        </tbody>
+                    </table>
+                    <h4>Summary Based on City 
+                        <?php if($bookings_brand_product_place) { ?>
+                            <a style="display: inline-block;float: right;" target="_blank" href="<?php echo base_url('booking/summary_print').$params_place; ?>">Print</a>
+                        <?php } ?>
+                    </h4>
+                    <table class="table table-striped table-bordered table-hover" id="">
+                        <thead>
+                            <tr>
+                                <th style="text-align:left;">S.No</th>    
+                                <th style="text-align:left;">City</th>  
+                                <th style="text-align:left;">Brand</th>   
+                                <th style="text-align:left;">Product</th>
+                                <th style="text-align:left;">Quantity(Tins/Cartons)</th>
+                                <th style="text-align:left;">Weight (MT)</th>
+                                <th style="text-align:left;">Average Rate</th>
+                            </tr>
+                        </thead>
+                        <tbody class="">
+                            <?php $weight_total_summary = 0; $sn = 1; if($bookings_brand_product_place) {
+                                foreach ($bookings_brand_product_place as $key => $bookings_brand_product_place1) { 
+                                    $weight_total_summary = $weight_total_summary+$bookings_brand_product_place1['weight']; ?>
+                                <tr>
+                                    <td><?php echo $sn; ?></td>  
+                                    <td><?php echo $bookings_brand_product_place1['city_name']; ?></td>
+                                    <td><?php echo $bookings_brand_product_place1['brand_name']; ?></td>
+                                    <td><?php echo $bookings_brand_product_place1['category_name']; ?></td> 
+                                    <td><?php echo $bookings_brand_product_place1['quantity']; ?></td> 
+                                    <td><?php echo $bookings_brand_product_place1['weight']; ?></td> 
+                                    <td><?php echo round($bookings_brand_product_place1['avg_rate'],2); ?></td> 
+                                </tr>
+                            <?php $sn++; } ?>
+                            <tr style="color:red;"><td colspan="4"></td><td>Total</td><td ><?php echo $weight_total_summary; ?></td></tr>
+                            <?php } else { ?>
+                                <tr><td colspan="6">No Record Found</td></tr>
+                            <?php } ?>
+                        </tbody>
+                    </table>
+                    <?php } ?>
+                </div>
+                <!--
+                <div>
+                    <span><strong>Total Ordered Weight : <?php echo $total_weight; ?> in Kg (<?php echo $total_weight/1000; ?> In Ton)</strong></span>
+                </div>-->
+                 
+            </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<?php include 'footer.php'; ?>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flatpickr/4.2.3/flatpickr.js"></script>
+<script type="text/javascript">
+$("#booking_date_from,#booking_date_to").flatpickr({  
+    dateFormat: "d-m-Y",
+}); 
+</script>
+<script>
+$(document).ready(function(){
+    var number_of_packings = 0;
+    $(".add_more").click(function(){
+        var packing_added = $(".packaging").find(".row").length; 
+        if(number_of_packings>packing_added)
+        {
+            var packing_list ="<option value=''>Select Packed In</option>";
+            var category_id = $("#category").val(); 
+            $.ajax({
+                type: 'POST',
+                url: '<?php echo base_url(); ?>product/getproduct',
+                data: { 'category_id': category_id},
+                success: function(msg){ 
+                    packing_list = msg;
+                    $('.packaging').append('<div class="row more_added_products"><div class="col-md-4"> <div class="form-group"> <label for="name">Packed In</label> <select class="form-control product_packing" id="" name="product[]" required>'+packing_list+'</select></div></div><div class="col-md-4"> <div class="form-group"> <label for="quantity">Quantity</label> <input type="text" class="form-control quantity_packed" id="" name="quantity[]" required value=""> <span class="txt-danger"></span> </div></div><div class="col-md-4"> <div class="form-group"><label class="btn-block">&nbsp;</label> <span class="remove btn btn-default">Remove</span> </div></div></div>');
+                }
+            }); 
+        }    
+        else
+        {
+            alert("only "+number_of_packings+" packaging are available.");
+        }    
+    }); 
+    
+    $(document).on('change', '.product_packing', function(){
+        var packing_in = $(this).val();
+        var match_count = 0;
+        $(".product_packing").each(function(){  
+            if($(this).val()==packing_in)
+            {
+                match_count++;
+            }            
+        });  
+        if(match_count>=2)
+        {
+            alert("Already selected");
+            $(this).val('');
+        }
+    });
+
+    $(document).on('keyup', '.rate', function(){
+         if (this.value.match(/[^0-9.]/g, '')) { 
+          this.value = this.value.replace(/[^0-9.]/g, '');      
+        } 
+    });
+
+    $(document).on('keyup', '.quantity_packed', function(){
+        
+        var category_id = $("#category").val();
+        var category_name = $("#category :selected").text().toLowerCase();  
+        var category_name = category_name.trim();
+        if(category_id=='')
+        {
+            alert("Please select product"); 
+            this.value = '';
+            return false;
+        }
+
+         if (this.value.match(/[^0-9]/g, '')) { 
+          this.value = this.value.replace(/[^0-9]/g, '');      
+        }  
+
+        var l_to_kg = .910; 
+        if(category_name=='vanaspati')
+            var l_to_kg = .897;
+        var total_weight_kg= (((this.value)*15)*l_to_kg);
+        var mt =  total_weight_kg/1000;
+        var mt_rond = mt.toFixed(2);;
+        $("#weight").val(mt);
+        $('.Total_Weight_MT').text(mt_rond+' MT');
+    });
+    $(document).on('click', '.remove', function(){
+        $(this).parent().parent().parent().remove();
+    });
+
+    $(".show_terms").click(function(){
+        $('.payment_terms_section').hide();
+        $('.dispatch_delivery_terms_section').hide();
+        var payment_terms = $(this).attr('data-payment-term');
+        var dispatch_delivery_terms = $(this).attr('data-dispatch_delivery-term');
+
+        if(payment_terms.trim()!='')
+        {
+            $('.payment_terms').text(payment_terms);
+            $('.payment_terms_section').show();
+        }
+        if(dispatch_delivery_terms.trim()!='')
+        {
+            $('.dispatch_delivery_terms').text(dispatch_delivery_terms);
+            $('.dispatch_delivery_terms_section').show();
+        }
+
+        $('#myModalTerms').modal('show');
+    });
+    $(".reset").click(function(){
+        $("#dtp_input1").val('');
+        $(".calc_b").val('');
+    });
+    $("#brand").change(function(){
+        var brand_id = $(this).val(); 
+        $("#quantity").val('');
+        $(".Total_Weight_MT").text('');
+        $.ajax({
+            type: 'POST',
+            url: '<?php echo base_url(); ?>product/getcategory',
+            data: { 'brand_id': brand_id},
+            success: function(msg){
+                $("#category").html(msg);
+            }
+        });
+    });
+    $("#category").change(function(){
+        var category_id = $(this).val(); 
+        var brand_id = $('#brand').val(); 
+        $("#quantity").val('');
+        $(".Total_Weight_MT").text('');
+        $.ajax({
+            type: 'POST',
+            url: '<?php echo base_url(); ?>product/getproductlist',
+            data: { 'category_id': category_id},
+            success: function(msg){
+
+                var response = msg.split("__");
+                $(".product_packing").html(response[0]);
+                number_of_packings = response[1];
+                $('.more_added_products').remove();
+            }
+        });
+
+
+        $.ajax({
+            type: 'POST',
+            url: '<?php echo base_url(); ?>product/getrate',
+            data: { 'category_id': category_id,'brand_id': brand_id},
+            success: function(rate){
+                //alert(rate);
+                $("#rate").val(rate);
+            }
+        });
+    }); 
+    $(document).ready(function(){ 
+         
+        //$(".show_details").click(function(){
+        $(document).on('click', '.show_details', function(){
+            var booking_id = $(this).attr('rel');  
+            var deccoded_booking_id = atob(booking_id);
+            var ele =  $(this);
+            $("#divLoading").css({display: "block"});
+            $.ajax({
+                type: 'POST',
+                url: '<?php echo base_url(); ?>booking/details',
+                data: { 'booking_id': booking_id},
+                success: function(msg){
+                    $("#divLoading").css({display: "none"});
+                    //alert(msg);
+                    $("#UpdateTime").text(msg);
+                    $('#DetailModal').modal('show'); 
+                }
+            });
+        });
+
+        
+        $(document).on('click', '.ApproveAllkBtn', function(){
+            $("#ApproveRemarkall").val(''); 
+            $('#DetailModal').modal('hide');
+            $("#ApproveAllremark").modal('show');
+        });
+        $(document).on('click', '.invoice_generate', function(){
+            var booking_id = $(this).attr('rel');
+            var production_unit = $('input[name="production_unit"]:checked').val(); 
+            var ApproveRemark = $("#ApproveRemarkall").val();
+            //alert(booking_id); alert(production_unit);
+            $.ajax({
+                type: 'POST',
+                url: '<?php echo base_url(); ?>booking/GetBookingInfoDetailsPdf',
+                data: { 'booking_id': booking_id,'production_unit': production_unit,'ApproveRemark': ApproveRemark},
+                success: function(msg){  
+                     alert("invoice mailed successfully");
+                     $("#ApproveRemarkall").val('');
+                     $("#ApproveAllremark").modal('hide');
+                     $('#DetailModal').modal('hide'); 
+                }
+            });
+        });   
+
+        $(document).on('click', '.approve_btn', function(){
+            var booking_id = $(this).attr('rel'); 
+            if(booking_id!='')
+            {
+                $.ajax({
+                    type: 'POST',
+                    url: '<?php echo base_url(); ?>booking/approve_order',
+                    data: { 'booking_id': booking_id},
+                    success: function(msg){ 
+                        alert("Order apporoved successfully.");
+                        location.reload();
+                    }
+                });
+            }
+        });
+
+        $(document).on('click', '.mail_btn', function(){
+            var booking_id = $(this).attr('rel'); 
+            $.ajax({
+                type: 'POST',
+                url: '<?php echo base_url(); ?>booking/sendmail_plant',
+                data: { 'booking_id': booking_id},
+                success: function(msg){ 
+                    alert("Mail sent successfully.");
+                }
+            });
+        });
+        $(document).on('click', '.detail', function(){
+            var booking_id = $(this).attr('rel');
+
+            var data_status = $(this).attr('data-status'); 
+             
+            var user_role = "<?php echo $logged_role; ?>";
+            var data_production_unit = $(this).attr('data-production_unit');
+
+            //alert(booking_id);
+            $.ajax({
+                type: 'POST',
+                url: '<?php echo base_url(); ?>booking/GetBookingInfoDetails',
+                data: { 'booking_id': booking_id},
+                success: function(msg){ 
+                    $("#divLoading").css({display: "none"}); 
+                    //$('.invoice_generate').attr('rel',booking_id);
+                    var href= "<?php echo base_url('booking/downloadreport').'/'; ?>"+btoa(booking_id);
+                    $('.btn_report').attr('href',href);
+                    $(".BookingInfoDetails").html(msg);
+
+                    if(user_role==2 || user_role==3)
+                    {
+                        //$('.mail_btn').attr('rel',btoa(booking_id));
+                        $('.mail_btn').attr('rel',booking_id);
+                        $('.mail_btn').text('Send mail to '+data_production_unit+' plant');
+                        $('.approve_btn').text('Approve');
+                        $('.approve_btn').attr('rel',booking_id);
+                        $(".approve_btn").css({"cursor": "pointer"}); 
+                        if(data_status==1)
+                        {
+                            $(".approve_btn").css({"cursor": "none"}); 
+                            $('.approve_btn').text('Approved');
+                            $('.approve_btn').attr('rel','');
+                        }
+                        
+
+                    }
+
+                    $('#DetailModal').modal('show'); 
+                }
+            });
+        });     
+        $(document).on('click', '.update_status_reject', function(){
+            $("#remark").val('');
+            $("#v_ramark").html('');
+            if (!confirm("Are you sure ?")){
+              return false;
+            }
+            $("#divLoading").css({display: "block"});
+            var booking_id = $(this).attr('rel');  
+            var data_status = $(this).attr('data-status');  
+            if(data_status==3)
+                var btn = '<span class="btn btn-danger update_status" rel="'+booking_id+'" data-status="3"><a href="javascript:void(0)" >Reject</a></span>';
+            else
+                var btn = '<span class="btn btn-success update_status" rel="'+booking_id+'" data-status="2"><a href="javascript:void(0)" >Approve</a></span>';
+            $('.submit_reject').html(btn);
+            $('#myModal').modal('show');
+            $("#divLoading").css({display: "none"});
+        }); 
+        $(document).on('click', '.update_status', function(){
+            var status = $(this).attr('data-status'); 
+            var remark = $("#remark").val();
+            if(status==3 || status==2)
+            {
+                if(remark.trim()=='')
+                {
+                    $("#v_ramark").html('<span style="color:red">Please Enter Remark</span>');
+                    return false;
+                }
+                else
+                { 
+                    $("#v_ramark").html('');
+                }
+            }
+            else
+            {    
+                if (!confirm("Are you sure ?")){
+                  return false;
+                }
+            } 
+            var booking_id = $(this).attr('rel');  
+            var deccoded_booking_id = atob(booking_id);
+            var ele =  $(this);
+            $("#divLoading").css({display: "block"});
+            $.ajax({
+                type: 'POST',
+                url: '<?php echo base_url(); ?>booking/updatestatus',
+                data: { 'booking_id': booking_id,'status': status,'remark': remark},
+                success: function(msg){
+                    $("#divLoading").css({display: "none"});
+                    if(msg)
+                    {
+                       $("#remark").val('');
+                        ele.unbind('click'); 
+                        ele.removeClass( "btn-danger update_status" );
+                        
+                        if(status==1)
+                        {
+                            ele.addClass( "btn-warning" );
+                            ele.text("Checked"); 
+                        }
+                        else if(status==2)
+                        { 
+                            //ele.closest('.approval_status_section').html("<span class='btn btn-success'>Approved</span>");
+                            $('.remark'+deccoded_booking_id).text(remark);
+                            $('#myModal').modal('hide');
+                            $('.'+deccoded_booking_id).html("<span class='btn btn-success show_details' rel='"+booking_id+"'>Approved</span>"); 
+                        }
+                        else if(status==3)
+                        {
+                            $('.remark'+deccoded_booking_id).text(remark);
+                            $('#myModal').modal('hide');
+                            $('.'+deccoded_booking_id).html("<span class='btn btn-danger show_details' rel='"+booking_id+"'>Rejected</span>"); 
+                            //ele.closest('.approval_status_section').html("<span class='btn btn-danger'>Rejected</span>"); 
+                        }
+                    }
+                }
+            });
+        });
+    });
+});
+</script>
+ 
+ 
+<script type="text/javascript" src="<?php echo base_url(); ?>assets/js/bootstrap-datetimepicker.js" charset="UTF-8"></script>
+<script type="text/javascript" src="<?php echo base_url(); ?>assets/js/bootstrap-datetimepicker.fr.js" charset="UTF-8"></script>
+<script type="text/javascript">
+    $('.form_date').datetimepicker({
+        weekStart: 1,
+        todayBtn:  1,
+        autoclose: 1,
+        todayHighlight: 1,
+        startView: 2,
+        minView: 2,
+        forceParse: 0
+    });
+</script>
+<?php $total_weight_ton = $total_weight/1000; ?>
+<script type="text/javascript">
+    var total_weight_ton = '<?php echo round($total_weight_ton,3);?>'
+    $('#total_weight').html("<b>Total Ordered Weight : "+total_weight_ton+" Ton </b><br>");
+</script>
+
+
+
+<script src='<?php echo base_url(); ?>assets/select2/dist/js/select2.min.js' type='text/javascript'></script>
+<link href='<?php echo base_url(); ?>assets/select2/dist/css/select2.min.css' rel='stylesheet' type='text/css'>
+<script>
+    $(document).ready(function(){
+        $("#party").select2(); 
+        $("#broker").select2(); 
+    });
+    $(document).ready(function() {
+      $(window).keydown(function(event){
+        if(event.keyCode == 13) {
+          event.preventDefault();
+          return false;
+        }
+      });
+    });
+</script>
+<!-- Trigger the modal with a button -->
+
+
+<!-- Modal -->
+<div id="myModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+        <form method="POST" id="">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Remark</h4>
+            </div>
+            <div class="modal-body">
+                <textarea class="form-control" name="remark" id="remark"></textarea>
+                <span id="v_ramark"></span>
+            </div>
+            <div class="modal-footer">
+                <span class="submit_reject"></span>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </form>
+    </div>
+
+  </div>
+</div>
+
+
+<div id="myModalTerms" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+        <form method="POST" id="">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Terms</h4>
+            </div>
+            <div class="modal-body">
+                <div class="payment_terms_section" style="display:none;">
+                    <h3>Payment Terms</h3>
+                    <div class="payment_terms"></div>
+                </div>
+                <div class="dispatch_delivery_terms_section" style="display:none;">
+                    <h3>Dispatch/Delivery Terms</h3>
+                    <div class="dispatch_delivery_terms"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <span class="submit_reject"></span>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </form>
+    </div>
+
+  </div>
+</div>
+
+
+<div id="DetailModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+        <form method="POST" id="">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button> 
+            </div>
+            <div class="modal-body BookingInfoDetails"> 
+            </div>
+            <div class="modal-footer">
+                <a href="javascript:void(0);" rel="" class="btn btn-default btn_report detail">Download Report</a>
+                <?php if($logged_role == 3 || $logged_role == 2) { ?>
+                <span class="approve_btn btn btn-default" rel="">Approve</span>
+                <span class="mail_btn btn btn-default" rel="" style="display: none;">Send</span>
+                <?php } ?> 
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </form>
+    </div>
+
+  </div>
+</div>
+
+
+
+<div id="RemarkModal1" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+        <form method="POST" id="">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Remark</h4>
+            </div>
+            <div class="modal-body">
+                <textarea class="form-control" name="remark" id="remark_close"></textarea>
+                <span id="v_ramark"></span>
+            </div>
+            <div class="modal-footer">
+                <span class="submit_reject"></span>
+                <button type="submit" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </form>
+    </div>
+
+  </div>
+</div>
+
+<div id="BookingSuccessModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <!-- Modal content-->
+    <div class="modal-content">
+        <form method="POST" id="">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Success</h4>
+            </div>
+            <div class="modal-body">
+                Order Booked.
+            </div>
+            <div class="modal-footer"> 
+                <button type="submit" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </form>
+    </div>
+
+  </div>
+</div>
+<!-- Modal -->
+<div id="ApproveAllremark" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+        <form method="POST" id="">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Remark</h4>
+            </div>
+            <div class="modal-body">
+                <input type="radio" class="production_unit" name="production_unit" checked value="alwar"> Alwar
+                <input type="radio" class="production_unit" name="production_unit" value="jaipur"> Jaipur
+                <textarea class="form-control" name="ApproveAllremark" id="ApproveRemarkall"></textarea>
+                
+            </div>
+            <div class="modal-footer"> 
+                <span class="invoice_generate btn btn-default" rel="">Approve All & Send Invoice</span>
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </form>
+    </div>
+
+  </div>
+</div>

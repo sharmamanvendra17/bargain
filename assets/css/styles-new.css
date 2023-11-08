@@ -1,0 +1,86 @@
+body{
+    font-family: 'Poppins';
+    overflow: hidden;
+}
+.bg-yellow{
+    background-image: url(../images/bg-yellow-1.jpg);
+    height: 100%;
+    width: 100%;
+    position: absolute;		
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+.form-box{
+    position:absolute;
+    transform: translate(-50%,-50%);
+    left: 50%;
+    top: 50%;
+    width:500px;
+    text-align:center;
+}
+.form-content{
+    background-image: linear-gradient(to right, #fbc201 , #fb4008);
+    border-radius: 28px;
+}
+.form-content h4{
+    font-family: 'Poppins';
+    font-weight: bold;
+    font-size: 30px;
+    line-height: 58px;
+    color:#fff;
+	margin-bottom: 0;
+}
+.form-bg-white{
+    background:#fff;
+    text-align:left !important;
+    padding:30px;		
+    border-radius: 25px;
+    border: 1px solid #ff4200;
+}
+.form-bg-white .login-btn{
+    background-image: linear-gradient(to right, #fbc201 , #fb4008);
+    text-align:center !important;		
+    border-radius: 5px;
+    font-family: 'Poppins';
+    font-weight: bold;
+    font-size: 22px;
+    line-height: 30px;
+    color:#fff;
+}
+.form-bg-white label{
+    font-family: 'Poppins';
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 25px;
+    color:#000;
+}
+.form-bg-white ::placeholder{
+    font-family: 'Poppins';
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 30px;
+    color:#000;
+}
+.form-control:focus {
+    color: #212529;
+    background-color: #fff;
+    border-color: #86b7fe;
+    outline: 0;
+    box-shadow: 0 0 0 0.25rem rgb(13 110 253 / 0%);
+}
+@media screen and (min-device-width: 1600px) and (max-device-width: 1920px){ 
+    .bg-yellow{
+        background-image: url(../images/bg-yellow.jpg);
+        height: 100%;
+        width: 100%;
+        position: absolute;		
+        background-position:0 -102px;
+        background-repeat: no-repeat;
+		background-size:cover
+    }
+	
+.form-box{
+    top: 37%;
+}
+}
